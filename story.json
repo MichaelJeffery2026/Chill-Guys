@@ -1,0 +1,22 @@
+{
+  "intro": {
+    "text": "This is the introduction",
+    "choices": {
+      "Go to Scene 1": "Scene1",
+      "Go to Scene 2": "Scene2"
+    }
+  },
+  "Scene1": {
+    "text": "This is Scene 1",
+    "choices": {
+      "Go to Scene 2": "Scene2"
+    }
+  },
+  "Scene2": {
+    "text": "This is Scene 2", 
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "exit": {}
+}
