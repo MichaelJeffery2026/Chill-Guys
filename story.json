@@ -1,19 +1,97 @@
 {
   "intro": {
-    "text": "",
+    "text": "scene intro storyline",
     "choices": {
-      "Go to Scene 1": "Scene1",
-      "Go to Scene 2": "Scene2"
+      "Go to Scene 1-1": "scene1-1",
+      "Go to Scene 1-2": "scene1-2"
     }
   },
-  "Scene1": {
-    "text": "This is Scene 1",
+  "scene1-1": {
+    "text": "scene 1-1 storyline",
     "choices": {
-      "Go to Scene 2": "Scene2"
+      "Go to Scene 1-1-1": "scene1-1-1",
+      "Go to Scene 1-1-2": "scene1-1-2"
     }
   },
-  "Scene2": {
-    "text": "This is Scene 2", 
+  "scene1-1-1": {
+    "text": "scene 1-1-1 storyline",
+    "choices": {
+      "Go to Scene 1-1-1-1": "scene1-1-1-1",
+      "Go to Scene 1-1-1-2": "scene1-1-1-2"
+    }
+  },
+  "scene1-1-1-1": {
+    "text": "scene 1-1-1-1 storyline",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "scene1-1-1-2": {
+    "text": "scene 1-1-1-2 storyline",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "scene1-1-2": {
+    "text": "scene 1-1-2 storyline",
+    "choices": {
+      "Go to Scene 1-1-2-1": "scene1-1-2-1",
+      "Go to Scene 1-1-2-2": "scene1-1-2-2"
+    }
+  },
+  "scene1-1-2-1": {
+    "text": "scene 1-1-2-1 storyline",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "scene1-1-2-2": {
+    "text": "scene 1-1-2-2 storyline",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "scene1-2": {
+    "text": "scene 1-2 storyline",
+    "choices": {
+      "Go to Scene 1-2-1": "scene1-2-1",
+      "Go to Scene 1-2-2": "scene1-2-2"
+    }
+  },
+  "scene1-2-1": {
+    "text": "scene 1-2-1 storyline",
+    "choices": {
+      "Go to Scene 1-2-1-1": "scene1-2-2-1",
+      "Go to Scene 1-2-1-2": "scene1-2-2-2"
+    }
+  },
+  "scene1-2-1-1": {
+    "text": "scene 1-2-1-1 storyline",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "scene1-2-1-2": {
+    "text": "scene 1-2-1-2 storyline",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "scene1-2-2": {
+    "text": "scene 1-2-2 storyline",
+    "choices": {
+      "Go to Scene 1-2-2-1": "scene1-2-2-1",
+      "Go to Scene 1-2-2-2": "scene1-2-2-2"
+    }
+  },
+  "scene1-2-2-1": {
+    "text": "scene 1-2-2-1 storyline",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "scene1-2-2-2": {
+    "text": "scene 1-2-2-2 storyline",
     "choices": {
       "End Game": "exit"
     }
