@@ -1,6 +1,6 @@
 {
   "intro": {
-    "text": "This is the introduction",
+    "text": "",
     "choices": {
       "Go to Scene 1": "Scene1",
       "Go to Scene 2": "Scene2"
