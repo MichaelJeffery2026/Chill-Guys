@@ -23,15 +23,15 @@
   "scene1-1-1-1": {
     "text": "You press against the vines, their warmth unsettling. A shadowy figure passes—an alien creature scanning the area with piercing violet eyes. It pauses, sensing your presence.",
     "choices": {
-      "Stay hidden and wait it out": "exit1",
-      "Attempt a stealthy escape": "exit2"
+      "Stay hidden and wait it out": "ending1",
+      "Attempt a stealthy escape": "ending2"
     }
   },
   "scene1-1-1-2": {
     "text": "Bracing yourself, you confront the alien. It stops, revealing a communicator translating its clicks into words: 'We've awaited your arrival.' An offer of alliance or manipulation?",
     "choices": {
-      "Agree to follow the alien": "exit3",
-      "Refuse and demand answers": "exit4"
+      "Agree to follow the alien": "ending3",
+      "Refuse and demand answers": "ending4"
     }
   },
   "scene1-1-2": {
@@ -44,15 +44,15 @@
   "scene1-1-2-1": {
     "text": "Following the voices, you reach a chamber filled with suspended human-like figures encased in translucent pods. Their eyes open simultaneously, fixating on you.",
     "choices": {
-      "Attempt to free them": "exit5",
-      "Back away slowly": "exit6"
+      "Attempt to free them": "ending5",
+      "Back away slowly": "ending6"
     }
   },
   "scene1-1-2-2": {
     "text": "Returning to Orion, the docking clamps malfunction, trapping you aboard the derelict ship. NOVA urgently alerts: 'Systems compromised. Extraterrestrial intrusion detected.'",
     "choices": {
-      "Fight your way back to the cockpit": "exit7",
-      "Attempt manual override": "exit8"
+      "Fight your way back to the cockpit": "ending7",
+      "Attempt manual override": "ending8"
     }
   },
   "scene1-2": {
@@ -72,15 +72,15 @@
   "scene1-2-1-1": {
     "text": "Communication is strained but successful. The intruder reveals they've been infected by an alien intelligence, pleading for release or help.",
     "choices": {
-      "Try to save the intruder": "exit9",
-      "Eject them into space": "exit10"
+      "Try to save the intruder": "ending9",
+      "Eject them into space": "ending10"
     }
   },
   "scene1-2-1-2": {
     "text": "The intruder fights fiercely but you overpower them. Before collapsing, they whisper, 'It's already too late... they're coming.' NOVA detects an incoming fleet of unknown ships.",
     "choices": {
-      "Prepare defenses": "exit11",
-      "Attempt escape": "exit12"
+      "Prepare defenses": "ending11",
+      "Attempt escape": "ending12"
     }
   },
   "scene1-2-2": {
@@ -93,15 +93,111 @@
   "scene1-2-2-1": {
     "text": "You vent the section, eliminating the threat but losing vital reactor functions. Power dwindles, leaving Orion drifting helplessly toward the derelict.",
     "choices": {
-      "Send distress signal": "exit13",
-      "Attempt a manual reboot": "exit14"
+      "Send distress signal": "ending13",
+      "Attempt a manual reboot": "ending14"
     }
   },
   "scene1-2-2-2": {
     "text": "Remote repairs stabilize the reactor briefly, but the intruder escapes engineering through ventilation shafts. NOVA detects them approaching your position rapidly.",
     "choices": {
-      "Prepare an ambush": "exit15",
-      "Lock yourself in the cockpit": "exit16"
+      "Prepare an ambush": "ending15",
+      "Lock yourself in the cockpit": "ending16"
+    }
+  },
+  "ending1": {
+    "text": "Discovered and captured by aliens, your fate remains a mystery.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending2": {
+    "text": "Your escape fails, leaving you stranded forever in the derelict ship.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending3": {
+    "text": "You form an unexpected alliance, beginning a new chapter among the stars.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending4": {
+    "text": "Defiance costs you dearly, as the alien reveals its true, hostile nature.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending5": {
+    "text": "The pods open, releasing beings grateful yet mysteriously silent.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending6": {
+    "text": "You retreat safely, haunted by the image of captive faces.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending7": {
+    "text": "Overwhelmed by intruders, Orion becomes your tomb.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending8": {
+    "text": "Manual override succeeds, but you drift helplessly into oblivion.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending9": {
+    "text": "You save the intruder, sparking new hope for interspecies understanding.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending10": {
+    "text": "The intruder's ejection ensures safety, but leaves you isolated and haunted.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending11": {
+    "text": "A heroic defense ensues, your courage becoming legend.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending12": {
+    "text": "You narrowly escape, charting a lonely course into the unknown.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending13": {
+    "text": "The distress call answered too late; your story becomes a cautionary tale.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending14": {
+    "text": "The reboot restores hope, guiding you safely back home.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending15": {
+    "text": "Your ambush fails, and the intruder claims Orion as its own.",
+    "choices": {
+      "End Game": "exit"
+    }
+  },
+  "ending16": {
+    "text": "Locked in, you survive—but at the cost of permanent solitude.",
+    "choices": {
+      "End Game": "exit"
     }
   },
   "exit": {}
