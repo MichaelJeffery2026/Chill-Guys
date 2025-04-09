@@ -1,409 +1,435 @@
 import pygame
 import json
-import time
+import time  # time is no longer used for sleeping here
 
 pygame.init()
-
 clock = pygame.time.Clock()  # Create a Clock object
 
-with open("story.json", "r") as f:
+# Load story and save data with UTF-8 encoding
+with open("story.json", "r", encoding="utf-8") as f:
     story = json.load(f)
-with open("save.json", "r") as f:
-        save_data = json.load(f)
-        current_scene = save_data["current_scene"]
-        STATUS_VALUES = save_data["status_values"]
-        is_save_present = save_data["save_present"]
+with open("save.json", "r", encoding="utf-8") as f:
+    save_data = json.load(f)
+    current_scene = save_data["current_scene"]
+    STATUS_VALUES = save_data["status_values"]
+    is_save_present = save_data["save_present"]
+
 GAME_STATE = "title"
 
 # Screen Size
 WIDTH = pygame.display.Info().current_w
 HEIGHT = pygame.display.Info().current_h
-pygame.display.set_caption("Title")
+pygame.display.set_caption("Space Odyssey")
 icon = pygame.image.load("Assets/General/logo.png")
 pygame.display.set_icon(icon)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-# Font
+# Font Initialization
 pygame.font.init()
 font = pygame.font.SysFont("Consolas", 28)
 DEBUG_FONT = pygame.font.SysFont("Consolas", 15)
 
-# Flags
+# Global Flags
 is_typing_done = False
 are_effects_applied = False
 is_menu_open = False
-is_save_present = False
+
 debug_level_one = False
 debug_level_two = False
 debug_level_three = False
 
-# Colors
-BORDER_COLOR = (255, 255, 255)  # White
-STATUS_PANEL_COLOR = (36, 36, 36)  # Shadow
-NARRATIVE_PANEL_COLOR = (82, 82, 82)  # Gray
-CHOICE_PANEL_COLOR = (78, 72, 76)  # Fossil
-MENU_COLOR = (178, 190, 181) # Ash
-TEXT_COLOR = (0, 0, 0) # Black
-BUTTON_COLOR = (180, 180, 180)
-BUTTON_HOVER = (220, 220, 220)
+# Colors (space-themed)
+BORDER_COLOR = (20, 20, 30)
+STATUS_PANEL_COLOR = (10, 10, 20)
+NARRATIVE_PANEL_COLOR = (30, 30, 50)
+CHOICE_PANEL_COLOR = (25, 25, 40)
+MENU_COLOR = (50, 50, 60)
+TEXT_COLOR = (220, 220, 240)
+BUTTON_COLOR = (80, 80, 100)
+BUTTON_HOVER = (120, 120, 140)
 STATUS_TEXT_COLOR = (0, 255, 255)
 
-# Status
+# Status (managed separately; currently empty)
 STATUS_NAMES = []
-# STATUS_VALUES =  [] 
 STATUS_ICONS = []
 STATUS_COUNT = 7
 
-# Sizing
+# Layout percentages and padding
 PADDING = 10
-STATUS_PANEL_WIDTH = WIDTH / 4
-CHOICE_PANEL_HEIGHT = HEIGHT / 4
+STATUS_PANEL_WIDTH_PCT = 0.20  # 20% of screen width
+CHOICE_PANEL_HEIGHT_PCT = 0.25  # 25% of screen height
 
+STATUS_PANEL_WIDTH = int(WIDTH * STATUS_PANEL_WIDTH_PCT)
+CHOICE_PANEL_HEIGHT = int(HEIGHT * CHOICE_PANEL_HEIGHT_PCT)
+NARRATIVE_PANEL_WIDTH = WIDTH - STATUS_PANEL_WIDTH - 3 * PADDING
+NARRATIVE_PANEL_HEIGHT = HEIGHT - CHOICE_PANEL_HEIGHT - 3 * PADDING
+
+# Global variable to track terminal (game-over) state
+terminal_scene = False
+
+# Global variables for non-blocking typewriter effect
+typing_full_text = ""
+typing_visible_text = ""
+typing_index = 0
+last_typing_time = 0
+typing_delay_ms = 30  # delay per character (milliseconds)
+
+def start_typing(new_text):
+    global typing_full_text, typing_visible_text, typing_index, last_typing_time, is_typing_done
+    typing_full_text = new_text
+    typing_visible_text = ""
+    typing_index = 0
+    last_typing_time = pygame.time.get_ticks()
+    is_typing_done = False
+
+def update_typing_text():
+    global typing_index, typing_visible_text, last_typing_time, is_typing_done
+    now = pygame.time.get_ticks()
+    if now - last_typing_time >= typing_delay_ms and not is_typing_done:
+        # Increase typing index based on elapsed time; here we add one character per delay interval.
+        typing_index += 1
+        last_typing_time = now
+        if typing_index >= len(typing_full_text):
+            typing_index = len(typing_full_text)
+            is_typing_done = True
+        typing_visible_text = typing_full_text[:typing_index]
+
+# --- Helper: Dynamic Text Scaling ---
+def get_scaled_text_surface(text, max_width, color, initial_size=28, min_size=12):
+    font_size = initial_size
+    scaled_font = pygame.font.SysFont("Consolas", font_size)
+    text_surface = scaled_font.render(text, True, color)
+    while text_surface.get_width() > max_width - 10 and font_size > min_size:
+        font_size -= 1
+        scaled_font = pygame.font.SysFont("Consolas", font_size)
+        text_surface = scaled_font.render(text, True, color)
+    return text_surface
+
+# --- Helper: Save Game ---
 def save_game():
+    global current_scene, STATUS_VALUES, is_save_present
+    is_save_present = True  # Mark that a save exists
     save_data = {
         "current_scene": current_scene,
         "status_values": STATUS_VALUES,
-        "save_present": True
+        "save_present": is_save_present
     }
-    with open("save.json", "w") as f:
+    with open("save.json", "w", encoding="utf-8") as f:
         json.dump(save_data, f)
 
+# --- Helper: Clear Save ---
+def clear_save():
+    global current_scene, STATUS_VALUES, is_save_present
+    current_scene = "The Lonely Veil"
+    STATUS_VALUES = []
+    is_save_present = False
+    with open("save.json", "w", encoding="utf-8") as f:
+        json.dump({
+            "current_scene": current_scene,
+            "status_values": STATUS_VALUES,
+            "save_present": is_save_present
+        }, f)
+
+# --- Helper: Render Title Screen ---
 def render_title_screen():
-    global TITLE_AREA, OPTIONS_AREA, LOGO_AREA, TITLE_PLAY, TITLE_OPTIONS, TITLE_QUIT, TITLE_PLAY_BUTTON, TITLE_OPTIONS_BUTTON, TITLE_QUIT_BUTTON
+    global TITLE_AREA, OPTIONS_AREA, LOGO_AREA
+    global TITLE_PLAY_BUTTON, TITLE_CONTINUE_BUTTON, TITLE_RESTART_BUTTON, TITLE_OPTIONS_BUTTON, TITLE_QUIT_BUTTON, current_scene
 
-    #Level 0
     screen.fill((0, 0, 0))
-
-    # Level 1
+    # Define the general areas for title screen.
     TITLE_AREA = pygame.Rect(WIDTH // 5, HEIGHT // 10, 3 * WIDTH // 5, 2 * HEIGHT // 5)
+    # OPTIONS_AREA will now be used to hold the three vertically arranged buttons.
     OPTIONS_AREA = pygame.Rect(5 * WIDTH // 12, 3 * HEIGHT // 5, WIDTH // 6, 2 * HEIGHT // 5)
-    LOGO_AREA = pygame.Rect(19 * WIDTH // 20, HEIGHT - (WIDTH - (19 * WIDTH // 20)), WIDTH - (19 * WIDTH // 20), WIDTH - (19 * WIDTH // 20))
-    # Level 2
-    TITLE_PLAY = pygame.Rect(OPTIONS_AREA.x, OPTIONS_AREA.y, OPTIONS_AREA.width, OPTIONS_AREA.height // 3)
-    TITLE_OPTIONS = pygame.Rect(OPTIONS_AREA.x, OPTIONS_AREA.y + OPTIONS_AREA.height // 3, OPTIONS_AREA.width, OPTIONS_AREA.height // 3)
-    TITLE_QUIT = pygame.Rect(OPTIONS_AREA.x, OPTIONS_AREA.y + 2 * OPTIONS_AREA.height // 3, OPTIONS_AREA.width, OPTIONS_AREA.height // 3)
-    # Level 3
-    TITLE_PLAY_BUTTON = pygame.Rect(TITLE_PLAY.x + TITLE_PLAY.width // 6, TITLE_PLAY.y + TITLE_PLAY.height // 4, 2 * TITLE_PLAY.width // 3, TITLE_PLAY.height // 2)
-    TITLE_OPTIONS_BUTTON = pygame.Rect(TITLE_OPTIONS.x + TITLE_OPTIONS.width // 6, TITLE_OPTIONS.y + TITLE_OPTIONS.height // 4, 2 * TITLE_OPTIONS.width // 3, TITLE_OPTIONS.height // 2)
-    TITLE_QUIT_BUTTON = pygame.Rect(TITLE_QUIT.x + TITLE_QUIT.width // 6, TITLE_QUIT.y + TITLE_QUIT.height // 4, 2 * TITLE_QUIT.width // 3, TITLE_QUIT.height // 2)
-
-    # Render
-    if TITLE_PLAY_BUTTON.collidepoint(mouse_x, mouse_y):
-        pygame.draw.rect(screen, BUTTON_HOVER, TITLE_PLAY_BUTTON)
+    LOGO_AREA = pygame.Rect(19 * WIDTH // 20, HEIGHT - (WIDTH - (19 * WIDTH // 20)),
+                            WIDTH - (19 * WIDTH // 20), WIDTH - (19 * WIDTH // 20))
+    # Define a vertical gap between buttons.
+    gap = PADDING
+    # Divide OPTIONS_AREA vertically into 3 buttons.
+    button_height = (OPTIONS_AREA.height - 2 * gap) / 3
+    
+    if is_save_present:
+        # Top row: two buttons side-by-side (Continue and Restart)
+        play_area = pygame.Rect(OPTIONS_AREA.x, OPTIONS_AREA.y, OPTIONS_AREA.width, button_height)
+        # Split horizontally with a gap.
+        TITLE_CONTINUE_BUTTON = pygame.Rect(play_area.x, play_area.y, (play_area.width - gap) / 2, play_area.height)
+        TITLE_RESTART_BUTTON = pygame.Rect(play_area.x + (play_area.width + gap) / 2, play_area.y,
+                                           (play_area.width - gap) / 2, play_area.height)
     else:
-        pygame.draw.rect(screen, BUTTON_COLOR, TITLE_PLAY_BUTTON)
+        # If no save exists, use a single button for "Start Game"
+        TITLE_PLAY_BUTTON = pygame.Rect(OPTIONS_AREA.x, OPTIONS_AREA.y, OPTIONS_AREA.width, button_height)
+
+    # Options button (middle row)
+    TITLE_OPTIONS_BUTTON = pygame.Rect(OPTIONS_AREA.x, OPTIONS_AREA.y + button_height + gap, 
+                                       OPTIONS_AREA.width, button_height)
+    # Quit button (bottom row)
+    TITLE_QUIT_BUTTON = pygame.Rect(OPTIONS_AREA.x, OPTIONS_AREA.y + 2 * (button_height + gap),
+                                    OPTIONS_AREA.width, button_height)
+
+    # Draw the buttons with hover effects
+    if is_save_present:
+        if TITLE_CONTINUE_BUTTON.collidepoint(mouse_x, mouse_y):
+            pygame.draw.rect(screen, BUTTON_HOVER, TITLE_CONTINUE_BUTTON)
+        else:
+            pygame.draw.rect(screen, BUTTON_COLOR, TITLE_CONTINUE_BUTTON)
+        if TITLE_RESTART_BUTTON.collidepoint(mouse_x, mouse_y):
+            pygame.draw.rect(screen, BUTTON_HOVER, TITLE_RESTART_BUTTON)
+        else:
+            pygame.draw.rect(screen, BUTTON_COLOR, TITLE_RESTART_BUTTON)
+    else:
+        if TITLE_PLAY_BUTTON.collidepoint(mouse_x, mouse_y):
+            pygame.draw.rect(screen, BUTTON_HOVER, TITLE_PLAY_BUTTON)
+        else:
+            pygame.draw.rect(screen, BUTTON_COLOR, TITLE_PLAY_BUTTON)
 
     if TITLE_OPTIONS_BUTTON.collidepoint(mouse_x, mouse_y):
         pygame.draw.rect(screen, BUTTON_HOVER, TITLE_OPTIONS_BUTTON)
     else:
         pygame.draw.rect(screen, BUTTON_COLOR, TITLE_OPTIONS_BUTTON)
-    
     if TITLE_QUIT_BUTTON.collidepoint(mouse_x, mouse_y):
         pygame.draw.rect(screen, BUTTON_HOVER, TITLE_QUIT_BUTTON)
     else:
         pygame.draw.rect(screen, BUTTON_COLOR, TITLE_QUIT_BUTTON)
 
-    if not is_save_present:
-        TITLE_PLAY_TEXT = font.render("Start Game", True, TEXT_COLOR)
+    # Render text onto the buttons
+    if is_save_present:
+        continue_text = get_scaled_text_surface("Continue Game", TITLE_CONTINUE_BUTTON.width, TEXT_COLOR)
+        restart_text = get_scaled_text_surface("Restart Game", TITLE_RESTART_BUTTON.width, TEXT_COLOR)
+        screen.blit(continue_text, continue_text.get_rect(center=TITLE_CONTINUE_BUTTON.center))
+        screen.blit(restart_text, restart_text.get_rect(center=TITLE_RESTART_BUTTON.center))
     else:
-        TITLE_PLAY_TEXT = font.render("Continue Game", True, TEXT_COLOR)
-    screen.blit(TITLE_PLAY_TEXT, TITLE_PLAY_TEXT.get_rect(center=TITLE_PLAY_BUTTON.center))
-
+        start_text = get_scaled_text_surface("Start Game", TITLE_PLAY_BUTTON.width, TEXT_COLOR)
+        # Force the starting scene
+        current_scene = "The Lonely Veil"
+        screen.blit(start_text, start_text.get_rect(center=TITLE_PLAY_BUTTON.center))
+        
     TITLE_OPTIONS_TEXT = font.render("Options", True, TEXT_COLOR)
     screen.blit(TITLE_OPTIONS_TEXT, TITLE_OPTIONS_TEXT.get_rect(center=TITLE_OPTIONS_BUTTON.center))
-
     TITLE_QUIT_TEXT = font.render("Quit Game", True, TEXT_COLOR)
     screen.blit(TITLE_QUIT_TEXT, TITLE_QUIT_TEXT.get_rect(center=TITLE_QUIT_BUTTON.center))
 
-def render_wrapped_text(text, x, y, font, color, max_width, line_spacing=5):
+
+# --- Helper: Render Wrapped Text ---
+def render_wrapped_text(text, x, y, font_obj, color, max_width, line_spacing=5):
     lines = []
-    for raw_line in text.split("\n"):  # Handle explicit newlines
+    for raw_line in text.split("\n"):
         words = raw_line.split(' ')
         current_line = ""
-
         for word in words:
             test_line = current_line + word + " "
-            test_width, _ = font.size(test_line)
-
+            test_width, _ = font_obj.size(test_line)
             if test_width > max_width and current_line:
                 lines.append(current_line.strip())
                 current_line = word + " "
             else:
                 current_line = test_line
-
         if current_line:
-            lines.append(current_line.strip())  # Add remaining words
-
-        lines.append("")  # Ensure explicit newlines are preserved
-
+            lines.append(current_line.strip())
+        lines.append("")
     y_offset = y
     for line in lines:
-        line_surface = font.render(line, True, color)
+        line_surface = font_obj.render(line, True, color)
         screen.blit(line_surface, (x, y_offset))
-        y_offset += font.get_height() + line_spacing  # Adjust spacing
+        y_offset += font_obj.get_height() + line_spacing
 
-def render_typing_text(text, x, y, font, color, max_width, delay=0.03):
-    global is_typing_done
-    
-    words = text.split(" ")
-    current_line = ""
-    lines = []
-    
-    for word in words:
-        test_line = current_line + word + " "
-        test_width, _ = font.size(test_line)
+# --- Helper: Render Typing Text (non-blocking) ---
+def render_typing_text_view(x, y, font_obj, color, max_width):
+    # Update the typing effect incrementally (non-blocking)
+    update_typing_text()
+    render_wrapped_text(typing_visible_text, x, y, font_obj, color, max_width)
 
-        if test_width > max_width and current_line:
-            lines.append(current_line.strip())
-            current_line = word + " "
-        else:
-            current_line = test_line
-
-    if current_line:
-        lines.append(current_line.strip())
-
-    y_offset = y
-    total_text = "\n".join(lines)  # Flatten into a single string
-    visible_text = ""
-
-    for i in range(len(total_text)):
-        visible_text = total_text[:i+1]  # Reveal one character at a time
-        screen.fill(NARRATIVE_PANEL_COLOR, (x, y, max_width, len(lines) * (font.get_height() + 5)))  # Clear previous text
-
-        y_offset = y
-        for line in visible_text.split("\n"):
-            line_surface = font.render(line, True, color)
-            screen.blit(line_surface, (x, y_offset))
-            y_offset += font.get_height() + 5  # Adjust spacing
-        
-        pygame.display.flip()
-        time.sleep(delay)  # Typing delay
-    is_typing_done = True
-
+# --- Helper: Render Status ---
 def render_status():
     global STATUS_PANEL, STATUS_WINDOW, STATUSES, STATUS_LOGOS, STATUS_TEXTS
     STATUSES = []
     STATUS_LOGOS = []
     STATUS_TEXTS = []
-
     STATUS_PANEL = pygame.Rect(PADDING, PADDING, STATUS_PANEL_WIDTH, HEIGHT - 2 * PADDING)
     pygame.draw.rect(screen, STATUS_PANEL_COLOR, STATUS_PANEL)
-
-    STATUS_WINDOW = pygame.Rect(STATUS_PANEL.x + PADDING, STATUS_PANEL.y + PADDING, STATUS_PANEL.width - 2 * PADDING, STATUS_PANEL.height - 2 * PADDING)
-
+    STATUS_WINDOW = pygame.Rect(STATUS_PANEL.x + PADDING, STATUS_PANEL.y + PADDING,
+                                STATUS_PANEL.width - 2 * PADDING, STATUS_PANEL.height - 2 * PADDING)
     STATUS_RECT_HEIGHT = min(STATUS_WINDOW.width // 3, (STATUS_WINDOW.height - (STATUS_COUNT - 1) * PADDING) / STATUS_COUNT)
     for i in range(STATUS_COUNT):
-        STATUS = pygame.Rect(STATUS_WINDOW.x, STATUS_WINDOW.y + i * (PADDING + STATUS_RECT_HEIGHT), STATUS_WINDOW.width, STATUS_RECT_HEIGHT)
-        STATUS_LOGO = pygame.Rect(STATUS.x, STATUS.y, STATUS.height, STATUS.height)
-        STATUS_TEXT = pygame.Rect(STATUS.x + STATUS.height, STATUS.y, STATUS.width - STATUS.height, STATUS.height)
-
-        STATUSES.append(STATUS)
-        STATUS_LOGOS.append(STATUS_LOGO)
-        STATUS_TEXTS.append(STATUS_TEXT)
-
-        if (i < len(STATUS_ICONS)):
-            logo = pygame.image.load(STATUS_ICONS[i])
-        else:
-            logo = pygame.image.load("Assets/General/error.png")
-
-        logo = pygame.transform.scale(logo, (STATUS_LOGO.width, STATUS_LOGO.height))
-        screen.blit(logo, STATUS_LOGO)
-
+        rect = pygame.Rect(STATUS_WINDOW.x, STATUS_WINDOW.y + i * (PADDING + STATUS_RECT_HEIGHT),
+                           STATUS_WINDOW.width, STATUS_RECT_HEIGHT)
+        status_logo = pygame.Rect(rect.x, rect.y, rect.height, rect.height)
+        status_text = pygame.Rect(rect.x + rect.height, rect.y, rect.width - rect.height, rect.height)
+        STATUSES.append(rect)
+        STATUS_LOGOS.append(status_logo)
+        STATUS_TEXTS.append(status_text)
+        try:
+            if i < len(STATUS_ICONS):
+                logo = pygame.image.load(STATUS_ICONS[i])
+            else:
+                logo = pygame.image.load("Assets/General/error.png")
+        except:
+            logo = pygame.Surface((status_logo.width, status_logo.height))
+            logo.fill((255, 0, 0))
+        logo = pygame.transform.scale(logo, (status_logo.width, status_logo.height))
+        screen.blit(logo, status_logo)
         if (i < len(STATUS_NAMES) and i < len(STATUS_VALUES)):
-            TEXT = font.render(STATUS_NAMES[i] + ": " + str(STATUS_VALUES[i]), True, STATUS_TEXT_COLOR)
+            text_surface = font.render(STATUS_NAMES[i] + ": " + str(STATUS_VALUES[i]), True, STATUS_TEXT_COLOR)
         else:
-            TEXT = font.render("Error", True, STATUS_TEXT_COLOR)
-        screen.blit(TEXT, TEXT.get_rect(center = STATUS_TEXT.center))
+            text_surface = font.render("Error", True, STATUS_TEXT_COLOR)
+        screen.blit(text_surface, text_surface.get_rect(center=status_text.center))
 
+# --- Helper: Render Narrative ---
 def render_narrative():
     global NARRATIVE_PANEL, NARRATIVE_WINDOW
-    
-    NARRATIVE_PANEL = pygame.Rect(STATUS_PANEL_WIDTH + 2 * PADDING, PADDING, WIDTH - STATUS_PANEL_WIDTH - 3 * PADDING, HEIGHT - CHOICE_PANEL_HEIGHT - 3 * PADDING)
+    NARRATIVE_PANEL = pygame.Rect(STATUS_PANEL_WIDTH + 2 * PADDING, PADDING,
+                                  NARRATIVE_PANEL_WIDTH, NARRATIVE_PANEL_HEIGHT)
     pygame.draw.rect(screen, NARRATIVE_PANEL_COLOR, NARRATIVE_PANEL)
-    
-    NARRATIVE_WINDOW = pygame.Rect(NARRATIVE_PANEL.x + PADDING, NARRATIVE_PANEL.y + PADDING, NARRATIVE_PANEL.width - 2 * PADDING, NARRATIVE_PANEL.height - 2 * PADDING)
-
+    NARRATIVE_WINDOW = pygame.Rect(NARRATIVE_PANEL.x + PADDING, NARRATIVE_PANEL.y + PADDING,
+                                   NARRATIVE_PANEL.width - 2 * PADDING, NARRATIVE_PANEL.height - 2 * PADDING)
+    # If typing is not done, update and render typing effect. Otherwise, render full text.
     if not is_typing_done:
-        render_typing_text(scene["text"], NARRATIVE_WINDOW.x, NARRATIVE_WINDOW.y, font, TEXT_COLOR, NARRATIVE_WINDOW.width)
+        render_typing_text_view(NARRATIVE_WINDOW.x, NARRATIVE_WINDOW.y, font, TEXT_COLOR, NARRATIVE_WINDOW.width)
     else:
         render_wrapped_text(scene["text"], NARRATIVE_WINDOW.x, NARRATIVE_WINDOW.y, font, TEXT_COLOR, NARRATIVE_WINDOW.width)
 
+# --- Helper: Render Choice Button Text ---
+def render_choice_button_text(text, rect):
+    font_size = 28
+    button_font = pygame.font.SysFont("Consolas", font_size)
+    text_surface = button_font.render(text, True, TEXT_COLOR)
+    while text_surface.get_width() > rect.width - 10 and font_size > 12:
+        font_size -= 1
+        button_font = pygame.font.SysFont("Consolas", font_size)
+        text_surface = button_font.render(text, True, TEXT_COLOR)
+    screen.blit(text_surface, text_surface.get_rect(center=rect.center))
+
+# --- Helper: Render Choices ---
 def render_choice():
-    global CHOICE_PANEL, CHOICE_WINDOW, CHOICES, CHOICE_BUTTONS
+    global CHOICE_PANEL, CHOICE_WINDOW, CHOICE_BUTTONS, CHOICES, terminal_scene
     CHOICES = []
     CHOICE_BUTTONS = []
-
-    CHOICE_PANEL = pygame.Rect(STATUS_PANEL_WIDTH + 2 * PADDING, HEIGHT - CHOICE_PANEL_HEIGHT - PADDING, WIDTH - STATUS_PANEL_WIDTH - 3 * PADDING, CHOICE_PANEL_HEIGHT)
+    CHOICE_PANEL = pygame.Rect(STATUS_PANEL_WIDTH + 2 * PADDING, HEIGHT - CHOICE_PANEL_HEIGHT - PADDING,
+                               WIDTH - STATUS_PANEL_WIDTH - 3 * PADDING, CHOICE_PANEL_HEIGHT)
     pygame.draw.rect(screen, CHOICE_PANEL_COLOR, CHOICE_PANEL)
-
-    CHOICE_WINDOW = pygame.Rect(CHOICE_PANEL.x + PADDING, CHOICE_PANEL.y + PADDING, CHOICE_PANEL.width - 2 * PADDING, CHOICE_PANEL.height - 2 * PADDING)
-    
-    CHOICE_WIDTH = (CHOICE_PANEL.width - (CHOICE_COUNT + 1) * PADDING) / CHOICE_COUNT
+    CHOICE_WINDOW = pygame.Rect(CHOICE_PANEL.x + PADDING, CHOICE_PANEL.y + PADDING,
+                                CHOICE_PANEL.width - 2 * PADDING, CHOICE_PANEL.height - 2 * PADDING)
+    raw_choices = list(scene.get("choices", {}).keys())
+    if len(raw_choices) == 0:
+        terminal_scene = True
+        rendered_choices = ["Game Over"]
+    else:
+        terminal_scene = False
+        rendered_choices = raw_choices
+    CHOICE_COUNT = len(rendered_choices)
+    if CHOICE_COUNT > 0:
+        button_width = (CHOICE_PANEL.width - (CHOICE_COUNT + 1) * PADDING) / CHOICE_COUNT
+    else:
+        button_width = 0
     for i in range(CHOICE_COUNT):
-        CHOICE = pygame.Rect(CHOICE_WINDOW.x + i * (CHOICE_WIDTH + PADDING), CHOICE_WINDOW.y, CHOICE_WIDTH, CHOICE_WINDOW.height)
-        CHOICE_BUTTON = pygame.Rect(CHOICE.x, CHOICE.y + CHOICE.height // 3, CHOICE.width, CHOICE.height // 3)
-
-        CHOICES.append(CHOICE)
-        CHOICE_BUTTONS.append(CHOICE_BUTTON)
-
-        if CHOICE_BUTTON.collidepoint(mouse_x, mouse_y):
-            pygame.draw.rect(screen, BUTTON_HOVER, CHOICE_BUTTON)
+        choice_rect = pygame.Rect(CHOICE_WINDOW.x + i * (button_width + PADDING),
+                                    CHOICE_WINDOW.y, button_width, CHOICE_WINDOW.height)
+        choice_button = pygame.Rect(choice_rect.x, choice_rect.y + choice_rect.height // 3,
+                                    choice_rect.width, choice_rect.height // 3)
+        CHOICE_BUTTONS.append(choice_button)
+        CHOICES.append(choice_rect)
+        if choice_button.collidepoint(mouse_x, mouse_y):
+            pygame.draw.rect(screen, BUTTON_HOVER, choice_button)
         else:
-            pygame.draw.rect(screen, BUTTON_COLOR, CHOICE_BUTTON) 
+            pygame.draw.rect(screen, BUTTON_COLOR, choice_button)
+        render_choice_button_text(rendered_choices[i], choice_button)
 
-        CHOICE_BUTTON_TEXT = font.render(choices[i], True, TEXT_COLOR)
-        screen.blit(CHOICE_BUTTON_TEXT, CHOICE_BUTTON_TEXT.get_rect(center =  CHOICE_BUTTON.center))
-
+# --- Helper: Render Menu ---
 def render_menu():
     global MENU, MENU_PLAY, MENU_OPTIONS, MENU_QUIT, MENU_PLAY_BUTTON, MENU_OPTIONS_BUTTON, MENU_QUIT_BUTTON
-
-    # Level 1
     MENU = pygame.Rect(3 * WIDTH // 8, HEIGHT // 4, WIDTH // 4, HEIGHT // 2)
-    # Level 2
     MENU_PLAY = pygame.Rect(MENU.x, MENU.y, MENU.width, MENU.height // 3)
     MENU_OPTIONS = pygame.Rect(MENU.x, MENU.y + MENU.height // 3, MENU.width, MENU.height // 3)
     MENU_QUIT = pygame.Rect(MENU.x, MENU.y + 2 * MENU.height // 3, MENU.width, MENU.height // 3)
-    # Level 3
-    MENU_PLAY_BUTTON = pygame.Rect(MENU_PLAY.x + MENU_PLAY.width // 6, MENU_PLAY.y + MENU_PLAY.height // 4, 2 * MENU_PLAY.width // 3, MENU_PLAY.height // 2)
-    MENU_OPTIONS_BUTTON = pygame.Rect(MENU_OPTIONS.x + MENU_OPTIONS.width // 6, MENU_OPTIONS.y + MENU_OPTIONS.height // 4, 2 * MENU_OPTIONS.width // 3, MENU_OPTIONS.height // 2)
-    MENU_QUIT_BUTTON = pygame.Rect(MENU_QUIT.x + MENU_QUIT.width // 6, MENU_QUIT.y + MENU_QUIT.height // 4, 2 * MENU_QUIT.width // 3, MENU_QUIT.height // 2)
-
-    # Render
+    MENU_PLAY_BUTTON = pygame.Rect(MENU_PLAY.x + MENU_PLAY.width // 6, MENU_PLAY.y + MENU_PLAY.height // 4,
+                                     2 * MENU_PLAY.width // 3, MENU_PLAY.height // 2)
+    MENU_OPTIONS_BUTTON = pygame.Rect(MENU_OPTIONS.x + MENU_OPTIONS.width // 6, MENU_OPTIONS.y + MENU_OPTIONS.height // 4,
+                                        2 * MENU_OPTIONS.width // 3, MENU_OPTIONS.height // 2)
+    MENU_QUIT_BUTTON = pygame.Rect(MENU_QUIT.x + MENU_QUIT.width // 6, MENU_QUIT.y + MENU_QUIT.height // 4,
+                                     2 * MENU_QUIT.width // 3, MENU_QUIT.height // 2)
     pygame.draw.rect(screen, MENU_COLOR, MENU)
-
     if MENU_PLAY_BUTTON.collidepoint(mouse_x, mouse_y):
         pygame.draw.rect(screen, BUTTON_HOVER, MENU_PLAY_BUTTON)
     else:
         pygame.draw.rect(screen, BUTTON_COLOR, MENU_PLAY_BUTTON)
-
     if MENU_OPTIONS_BUTTON.collidepoint(mouse_x, mouse_y):
         pygame.draw.rect(screen, BUTTON_HOVER, MENU_OPTIONS_BUTTON)
     else:
         pygame.draw.rect(screen, BUTTON_COLOR, MENU_OPTIONS_BUTTON)
-    
     if MENU_QUIT_BUTTON.collidepoint(mouse_x, mouse_y):
         pygame.draw.rect(screen, BUTTON_HOVER, MENU_QUIT_BUTTON)
     else:
         pygame.draw.rect(screen, BUTTON_COLOR, MENU_QUIT_BUTTON)
-
     MENU_PLAY_TEXT = font.render("Resume", True, TEXT_COLOR)
     screen.blit(MENU_PLAY_TEXT, MENU_PLAY_TEXT.get_rect(center=MENU_PLAY_BUTTON.center))
-
     MENU_OPTIONS_TEXT = font.render("Options", True, TEXT_COLOR)
     screen.blit(MENU_OPTIONS_TEXT, MENU_OPTIONS_TEXT.get_rect(center=MENU_OPTIONS_BUTTON.center))
-
     MENU_QUIT_TEXT = font.render("Save and Quit", True, TEXT_COLOR)
     screen.blit(MENU_QUIT_TEXT, MENU_QUIT_TEXT.get_rect(center=MENU_QUIT_BUTTON.center))
 
+# --- Debug Functions ---
 def debug_title_screen():
     if debug_level_one:
-        # Title Area
         pygame.draw.rect(screen, (255, 0, 0), TITLE_AREA, 1)
         screen.blit(DEBUG_FONT.render("Title Area", True, (255, 0, 0)), TITLE_AREA)
-        # Options Area
         pygame.draw.rect(screen, (255, 0, 0), OPTIONS_AREA, 1)
         screen.blit(DEBUG_FONT.render("Options Area", True, (255, 0, 0)), OPTIONS_AREA)
-        # Logo Area
         pygame.draw.rect(screen, (255, 0, 0), LOGO_AREA, 1)
         screen.blit(DEBUG_FONT.render("Logo Area", True, (255, 0, 0)), LOGO_AREA)
     if debug_level_two:
-        # Title Play
-        pygame.draw.rect(screen, (0, 255, 0), TITLE_PLAY, 1)
-        screen.blit(DEBUG_FONT.render("Title Play", True, (0, 255, 0)), TITLE_PLAY)
-        # Title Options
-        pygame.draw.rect(screen, (0, 255, 0), TITLE_OPTIONS, 1)
-        screen.blit(DEBUG_FONT.render("Title Options", True, (0, 255, 0)), TITLE_OPTIONS)
-        # Title Exit
-        pygame.draw.rect(screen, (0, 255, 0), TITLE_QUIT, 1)
-        screen.blit(DEBUG_FONT.render("Title Exit", True, (0, 255, 0)), TITLE_QUIT)
+        pygame.draw.rect(screen, (0, 255, 0), TITLE_PLAY_BUTTON, 1)
+        screen.blit(DEBUG_FONT.render("Title Play Button", True, (0, 255, 0)), TITLE_PLAY_BUTTON)
+        pygame.draw.rect(screen, (0, 255, 0), TITLE_OPTIONS_BUTTON, 1)
+        screen.blit(DEBUG_FONT.render("Title Options Button", True, (0, 255, 0)), TITLE_OPTIONS_BUTTON)
+        pygame.draw.rect(screen, (0, 255, 0), TITLE_QUIT_BUTTON, 1)
+        screen.blit(DEBUG_FONT.render("Title Quit Button", True, (0, 255, 0)), TITLE_QUIT_BUTTON)
     if debug_level_three:
-        # Title Play Button
-        pygame.draw.rect(screen, (0, 0, 255), TITLE_PLAY_BUTTON, 1)
-        screen.blit(DEBUG_FONT.render("Title Play Button", True, (0, 0, 255)), TITLE_PLAY_BUTTON)
-        # Title Options Button
-        pygame.draw.rect(screen, (0, 0, 255), TITLE_OPTIONS_BUTTON, 1)
-        screen.blit(DEBUG_FONT.render("Title Options Button", True, (0, 0, 255)), TITLE_OPTIONS_BUTTON)
-        # Title Play Button
-        pygame.draw.rect(screen, (0, 0, 255), TITLE_QUIT_BUTTON, 1)
-        screen.blit(DEBUG_FONT.render("Title Exit Button", True, (0, 0, 255)), TITLE_QUIT_BUTTON)
+        pass
 
 def debug_game():
     if debug_level_one:
-        # Status Window
         pygame.draw.rect(screen, (255, 0, 0), STATUS_WINDOW, 1)
         screen.blit(DEBUG_FONT.render("Status Window", True, (255, 0, 0)), STATUS_WINDOW)
-        # Narrative Window
         pygame.draw.rect(screen, (255, 0, 0), NARRATIVE_WINDOW, 1)
         screen.blit(DEBUG_FONT.render("Narrative Window", True, (255, 0, 0)), NARRATIVE_WINDOW)
-        # Choice Window
         pygame.draw.rect(screen, (255, 0, 0), CHOICE_WINDOW, 1)
         screen.blit(DEBUG_FONT.render("Choice Window", True, (255, 0, 0)), CHOICE_WINDOW)
     if debug_level_two:
-        # Status
         for i in range(STATUS_COUNT):
             pygame.draw.rect(screen, (0, 255, 0), STATUSES[i], 1)
             screen.blit(DEBUG_FONT.render("Status " + str(i + 1), True, (0, 255, 0)), STATUSES[i])
-        # Choice
-        for i in range(CHOICE_COUNT):
-            pygame.draw.rect(screen, (0, 255, 0), CHOICES[i], 1)
-            screen.blit(DEBUG_FONT.render("Choice " + str(i + 1), True, (0, 255, 0)), CHOICES[i])
+        for i in range(len(choices)):
+            pygame.draw.rect(screen, (0, 255, 0), CHOICE_BUTTONS[i], 1)
+            screen.blit(DEBUG_FONT.render("Choice " + str(i + 1), True, (0, 255, 0)), CHOICE_BUTTONS[i])
     if debug_level_three:
-        # Status Logos and Text
-        for i in range(STATUS_COUNT):
-            pygame.draw.rect(screen, (0, 0, 255), STATUS_LOGOS[i], 1)
-            screen.blit(DEBUG_FONT.render("Logo " + str(i + 1), True, (0, 0, 255)), STATUS_LOGOS[i])
-            pygame.draw.rect(screen, (0, 0, 255), STATUS_TEXTS[i], 1)
-            screen.blit(DEBUG_FONT.render("Text " + str(i + 1), True, (0, 0, 255)), STATUS_TEXTS[i])
-        # Choice Buttons
-        for i in range(CHOICE_COUNT):
-            pygame.draw.rect(screen, (0, 0, 255), CHOICE_BUTTONS[i], 1)
-            screen.blit(DEBUG_FONT.render("Button " + str(i + 1), True, (0, 0, 255)), CHOICE_BUTTONS[i])
+        pass
 
 def debug_menu():
     if debug_level_one:
-        # Menu
         pygame.draw.rect(screen, (255, 0, 0), MENU, 1)
         screen.blit(DEBUG_FONT.render("Menu", True, (255, 0, 0)), MENU)
     if debug_level_two:
-        # Menu Play
-        pygame.draw.rect(screen, (0, 255, 0), MENU_PLAY, 1)
-        screen.blit(DEBUG_FONT.render("Menu Play", True, (0, 255, 0)), MENU_PLAY)
-        # Menu Options
-        pygame.draw.rect(screen, (0, 255, 0), MENU_OPTIONS, 1)
-        screen.blit(DEBUG_FONT.render("Menu Options", True, (0, 255, 0)), MENU_OPTIONS)
-        # Menu Exit
-        pygame.draw.rect(screen, (0, 255, 0), MENU_QUIT, 1)
-        screen.blit(DEBUG_FONT.render("Menu Exit", True, (0, 255, 0)), MENU_QUIT)
+        pygame.draw.rect(screen, (0, 255, 0), MENU_PLAY_BUTTON, 1)
+        screen.blit(DEBUG_FONT.render("Menu Play Button", True, (0, 255, 0)), MENU_PLAY_BUTTON)
+        pygame.draw.rect(screen, (0, 255, 0), MENU_OPTIONS_BUTTON, 1)
+        screen.blit(DEBUG_FONT.render("Menu Options Button", True, (0, 255, 0)), MENU_OPTIONS_BUTTON)
+        pygame.draw.rect(screen, (0, 255, 0), MENU_QUIT_BUTTON, 1)
+        screen.blit(DEBUG_FONT.render("Menu Quit Button", True, (0, 255, 0)), MENU_QUIT_BUTTON)
     if debug_level_three:
-        # Menu Play Button
-        pygame.draw.rect(screen, (0, 0, 255), MENU_PLAY_BUTTON, 1)
-        screen.blit(DEBUG_FONT.render("Menu Play Button", True, (0, 0, 255)), MENU_PLAY_BUTTON)
-        # Menu Options Button
-        pygame.draw.rect(screen, (0, 0, 255), MENU_OPTIONS_BUTTON, 1)
-        screen.blit(DEBUG_FONT.render("Menu Options Button", True, (0, 0, 255)), MENU_OPTIONS_BUTTON)
-        # Menu Exit Button
-        pygame.draw.rect(screen, (0, 0, 255), MENU_QUIT_BUTTON, 1)
-        screen.blit(DEBUG_FONT.render("Menu Exit Button", True, (0, 0, 255)), MENU_QUIT_BUTTON)
+        pass
 
 def draw_fps():
-    fps = str(int(clock.get_fps()))  # Get FPS and convert to string
-    fps_text = DEBUG_FONT.render(f"FPS: {fps}", True, (255, 0, 0))  # White text
-    screen.blit(fps_text, (0, 0))  # Position at top-left
+    fps = str(int(clock.get_fps()))
+    fps_text = DEBUG_FONT.render(f"FPS: {fps}", True, (255, 0, 0))
+    screen.blit(fps_text, (0, 0))
 
-# Main Loop
+# --- Main Game Loop ---
 running = True
 while running:
     mouse_x, mouse_y = pygame.mouse.get_pos()
     scene = story[current_scene]
     choices = list(scene.get("choices", {}).keys())
-    CHOICE_COUNT = len(choices)
-
-    if (CHOICE_COUNT == 0):
-        GAME_STATE = "title"
-        current_scene = "intro"
-
+    
     screen.fill(BORDER_COLOR)
-    if (GAME_STATE == "title"):
+    if GAME_STATE == "title":
         render_title_screen()
         debug_title_screen()
     else:
@@ -415,10 +441,10 @@ while running:
     if is_menu_open:
         render_menu()
         debug_menu()
-
+    
+    draw_fps()
     pygame.display.flip()
-
-    # Event Handling
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -434,8 +460,26 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = event.pos
             if GAME_STATE == "title":
-                if TITLE_PLAY_BUTTON.collidepoint(mx, my):
-                    GAME_STATE = "game"
+                if is_save_present:
+                    # Check if the user clicked on the continue or restart button.
+                    # Title screen now has two buttons in the play area.
+                    # They were created in render_title_screen.
+                    # We need to test those buttons, so we require them to be global.
+                    try:
+                        if TITLE_CONTINUE_BUTTON.collidepoint(mx, my):
+                            GAME_STATE = "game"
+                        elif TITLE_RESTART_BUTTON.collidepoint(mx, my):
+                            clear_save()
+                            GAME_STATE = "game"
+                    except NameError:
+                        # Fall back for when no save exists
+                        if TITLE_PLAY_BUTTON.collidepoint(mx, my):
+                            current_scene = "The Lonely Veil"
+                            GAME_STATE = "game"
+                else:
+                    if TITLE_PLAY_BUTTON.collidepoint(mx, my):
+                        current_scene = "The Lonely Veil"
+                        GAME_STATE = "game"
                 if TITLE_QUIT_BUTTON.collidepoint(mx, my):
                     running = False
             else:
@@ -447,10 +491,18 @@ while running:
                         is_menu_open = False
                         GAME_STATE = "title"
                 else:
-                    for i, rect in enumerate(CHOICE_BUTTONS):
-                        if rect.collidepoint(mx, my) and i < len(choices):
-                            current_scene = scene["choices"][choices[i]]
-                            is_typing_done = False
-                            are_effects_applied = False
+                    if terminal_scene:
+                        if CHOICE_BUTTONS and CHOICE_BUTTONS[0].collidepoint(mx, my):
+                            clear_save()
+                            GAME_STATE = "title"
+                    else:
+                        for i, rect in enumerate(CHOICE_BUTTONS):
+                            if rect.collidepoint(mx, my) and i < len(choices):
+                                current_scene = scene["choices"][choices[i]]
+                                is_typing_done = False
+                                are_effects_applied = False
+                                # Set up the typewriter effect for the new scene text.
+                                start_typing(story[current_scene]["text"])
+    clock.tick(60)
 
 pygame.quit()
