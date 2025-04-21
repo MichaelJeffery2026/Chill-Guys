@@ -1,4 +1,6 @@
-import pygame
+# run pip3 install pygame_aseprite_animation to install animation package
+from pygame_aseprite_animation import *
+import os, pygame
 import json
 import time
 
@@ -188,7 +190,6 @@ def render_status():
 
     STATUS_PANEL = pygame.Rect(PADDING, PADDING, STATUS_PANEL_WIDTH, HEIGHT - 2 * PADDING)
     pygame.draw.rect(screen, STATUS_PANEL_COLOR, STATUS_PANEL)
-
     STATUS_WINDOW = pygame.Rect(STATUS_PANEL.x + PADDING, STATUS_PANEL.y + PADDING, STATUS_PANEL.width - 2 * PADDING, STATUS_PANEL.height - 2 * PADDING)
 
     STATUS_RECT_HEIGHT = min(STATUS_WINDOW.width // 3, (STATUS_WINDOW.height - (STATUS_COUNT - 1) * PADDING) / STATUS_COUNT)
@@ -201,19 +202,19 @@ def render_status():
         STATUS_LOGOS.append(STATUS_LOGO)
         STATUS_TEXTS.append(STATUS_TEXT)
 
-        if (i < len(STATUS_ICONS)):
-            logo = pygame.image.load(STATUS_ICONS[i])
-        else:
-            logo = pygame.image.load("Assets/General/error.png")
-
-        logo = pygame.transform.scale(logo, (STATUS_LOGO.width, STATUS_LOGO.height))
-        screen.blit(logo, STATUS_LOGO)
+        #if (i < len(STATUS_ICONS)):
+        #    logo = pygame.image.load(STATUS_ICONS[i])
+        #else:
+        #    logo = pygame.image.load("Assets/General/error.png")
+        #logo = pygame.transform.scale(logo, (STATUS_LOGO.width, STATUS_LOGO.height))
+        #screen.blit(logo, STATUS_LOGO)
 
         if (i < len(STATUS_NAMES) and i < len(STATUS_VALUES)):
             TEXT = font.render(STATUS_NAMES[i] + ": " + str(STATUS_VALUES[i]), True, STATUS_TEXT_COLOR)
         else:
             TEXT = font.render("Error", True, STATUS_TEXT_COLOR)
         screen.blit(TEXT, TEXT.get_rect(center = STATUS_TEXT.center))
+        
 
 def render_narrative():
     global NARRATIVE_PANEL, NARRATIVE_WINDOW
@@ -390,6 +391,16 @@ def draw_fps():
     fps_text = DEBUG_FONT.render(f"FPS: {fps}", True, (255, 0, 0))  # White text
     screen.blit(fps_text, (0, 0))  # Position at top-left
 
+# defining animations
+heartAnimation = Animation('Assets/animations/heart.aseprite')
+animationmanager1 = AnimationManager([heartAnimation], screen)
+
+brainAnimation = Animation('Assets/animations/brain.aseprite')
+animationmanager2 = AnimationManager([brainAnimation], screen)
+
+oxygenAnimation = Animation('Assets/animations/oxygen.aseprite')
+animationmanager3 = AnimationManager([oxygenAnimation], screen)
+
 # Main Loop
 running = True
 while running:
@@ -403,19 +414,25 @@ while running:
         current_scene = "intro"
 
     screen.fill(BORDER_COLOR)
+    
     if (GAME_STATE == "title"):
         render_title_screen()
         debug_title_screen()
     else:
         render_status()
         render_choice()
+        # animation updating
+        animationmanager1.update_self(-50, -90)
+        animationmanager2.update_self(-60, 10)
+        animationmanager3.update_self(-60, -120)
         render_narrative()
         debug_game()
+        
     
     if is_menu_open:
         render_menu()
         debug_menu()
-
+    
     pygame.display.flip()
 
     # Event Handling
@@ -452,5 +469,6 @@ while running:
                             current_scene = scene["choices"][choices[i]]
                             is_typing_done = False
                             are_effects_applied = False
+    
 
 pygame.quit()
