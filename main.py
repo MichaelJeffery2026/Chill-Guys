@@ -403,6 +403,11 @@ animationmanager3 = AnimationManager([oxygenAnimation], screen)
 
 # Main Loop
 running = True
+
+#PLAY SONG
+pygame.mixer.music.load('Assets/music/Exploration.wav')
+pygame.mixer.music.play(-1)
+
 while running:
     mouse_x, mouse_y = pygame.mouse.get_pos()
     scene = story[current_scene]
