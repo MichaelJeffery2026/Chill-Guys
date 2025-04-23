@@ -401,13 +401,24 @@ animationmanager2 = AnimationManager([brainAnimation], screen)
 oxygenAnimation = Animation('Assets/animations/oxygen.aseprite')
 animationmanager3 = AnimationManager([oxygenAnimation], screen)
 
+#initializing playlist
+pygame.mixer.init()
+
+playlist = [
+    'Assets/music/nerves.wav',
+    'Assets/music/rane.wav',
+    'Assets/music/Exploration.wav'
+]
+currentSongIndex = 1
+
+SONG_END = pygame.USEREVENT +1
+pygame.mixer.music.set_endevent(SONG_END)
+
+pygame.mixer.music.load(playlist[currentSongIndex])
+pygame.mixer.music.play()
+
 # Main Loop
 running = True
-
-#PLAY SONG
-pygame.mixer.music.load('Assets/music/Exploration.wav')
-pygame.mixer.music.play(-1)
-
 while running:
     mouse_x, mouse_y = pygame.mouse.get_pos()
     scene = story[current_scene]
@@ -474,6 +485,13 @@ while running:
                             current_scene = scene["choices"][choices[i]]
                             is_typing_done = False
                             are_effects_applied = False
+        elif event.type == SONG_END:
+            currentSongIndex += 1
+            if currentSongIndex >= len(playlist):
+                currentSongIndex = 0
+            pygame.mixer.music.load(playlist[currentSongIndex])
+            pygame.mixer.music.play()
+    
     
 
 pygame.quit()
