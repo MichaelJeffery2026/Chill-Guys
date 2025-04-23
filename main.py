@@ -434,6 +434,22 @@ animationmanager2 = AnimationManager([brainAnimation], screen)
 oxygenAnimation = Animation('Assets/animations/oxygen.aseprite')
 animationmanager3 = AnimationManager([oxygenAnimation], screen)
 
+#initializing playlist
+pygame.mixer.init()
+
+playlist = [
+    'Assets/music/nerves.wav',
+    'Assets/music/rane.wav',
+    'Assets/music/Exploration.wav'
+]
+currentSongIndex = 1 #Start at second song, arbitrary (loops through playlist in event handler)
+
+SONG_END = pygame.USEREVENT +1
+pygame.mixer.music.set_endevent(SONG_END)
+
+pygame.mixer.music.load(playlist[currentSongIndex])
+pygame.mixer.music.play()
+
 # Main Loop
 running = True
 while running:
@@ -523,6 +539,13 @@ while running:
                                 # Set up the typewriter effect for the new scene text.
                                 start_typing(story[current_scene]["text"])
     clock.tick(60)
+        elif event.type == SONG_END:
+            currentSongIndex += 1
+            if currentSongIndex >= len(playlist):
+                currentSongIndex = 0
+            pygame.mixer.music.load(playlist[currentSongIndex])
+            pygame.mixer.music.play()
+    
     
 
 pygame.quit()
