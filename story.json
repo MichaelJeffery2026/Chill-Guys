@@ -1,204 +1,106 @@
 {
-  "intro": {
-    "text": "You jolt awake from hypersleep as alarms blare throughout the spaceship Orion. Through the viewport, you see a colossal derelict spacecraft drifting ominously ahead, its surface glowing faintly with an eerie green hue. The ship’s AI, NOVA, calmly announces, 'Unknown vessel detected; life support systems compromised.'",
+  "The Lonely Veil": {
+    "text": "Your name is Aragon and you are a top general of a rebel group called Shrouded. You guys finally get enough resources and courage to rebel against the big corporations that run the world and have used up the world\u2019s resources for their own greed. Your rebellion fails, but you somehow manage to survive. Your friends, colleagues, and leaders are all gone. You have nothing left and you are being hunted by human and AI soldiers trained to hunt down fugitives. You also have a bounty out for you, so even local bounty hunters are pursuing you. You are smart and resourceful and have deep connections to a flourishing black market. You have heard of a better life somewhere far away and this is your only chance. You disguise yourself and go into the city\u2019s slums. You find 3 people that have information about how you can get out of earth. [[Who will you trust?]]",
+    "choices": {}
+  },
+  "Who will you trust?": {
+    "text": "[[Zel]] [[Vex]] [[Node-9]] [[The Broker]]",
     "choices": {
-      "Approach the derelict spacecraft": "scene1-1",
-      "Investigate internal ship systems": "scene1-2"
+      "Zel": "Zel",
+      "Vex": "Vex",
+      "Node-9": "Node-9"
     }
   },
-  "scene1-1": {
-    "text": "You pilot Orion carefully toward the massive derelict, its shadow enveloping your craft. NOVA identifies an airlock and docks autonomously. The airlock opens with a hiss, revealing corridors coated in bio-luminescent vines pulsing rhythmically.",
+  "Zel": {
+    "text": "Intelligent, anxious, reserved\nHas guilt, No courage\nInsider knowledge about technology and space travel\nWill help you with Ids, hangars, space craft\n[[A guard sees you guys trying to board a ship and is suspicious]]",
+    "choices": {}
+  },
+  "Vex": {
+    "text": "Witty, seductive, unpredictable\nHas connections in the bounty underworld and with smugglers, so you will be able to travel through secret routes as she has access to\nDodge other bounty hunters but she may cross you\nShe wants to bring a friend when you guys are working together already\n[[Sure]]\n[[You refuse]]",
     "choices": {
-      "Enter and explore deeper": "scene1-1-1",
-      "Scan for lifeforms first": "scene1-1-2"
+      "Sure": "Sure"
     }
   },
-  "scene1-1-1": {
-    "text": "Venturing inside, the vines twitch as you pass. Suddenly, the corridor seals shut behind you. Your comm buzzes: it's NOVA, warning you of movement approaching fast.",
+  "Node-9": {
+    "text": "Glitchy, philosophical, occasionally prophetic \nSpeaks in riddles and past data.\nGives you some information about the history of the wormholes and where it may lead to.\nCould lead to misinformation or glitch out.\n40% of glitching out and shutting down\n[[Take him to a black market repair shop ]]\n[[Roll with the AI as]]",
+    "choices": {}
+  },
+  "The Broker": {
+    "text": "Elusive, calculating\nCold and only values information and trade.\nKnows information about your hunters, the wormholes and gives you a detailed plan to get out of earth.\n0% chance of survival. \n[[Trust]]",
     "choices": {
-      "Hide among the vines": "scene1-1-1-1",
-      "Confront whatever is coming": "scene1-1-1-2"
+      "Trust": "Trust"
     }
   },
-  "scene1-1-1-1": {
-    "text": "You press against the vines, their warmth unsettling. A shadowy figure passes—an alien creature scanning the area with piercing violet eyes. It pauses, sensing your presence.",
-    "choices": {
-      "Stay hidden and wait it out": "ending1",
-      "Attempt a stealthy escape": "ending2"
-    }
+  "Take him to a black market repair shop ": {
+    "text": "Risk being caught and sent to the government. [[You encounter a guard ship right outside of earth]]",
+    "choices": {}
   },
-  "scene1-1-1-2": {
-    "text": "Bracing yourself, you confront the alien. It stops, revealing a communicator translating its clicks into words: 'We've awaited your arrival.' An offer of alliance or manipulation?",
-    "choices": {
-      "Agree to follow the alien": "ending3",
-      "Refuse and demand answers": "ending4"
-    }
+  "Roll with the AI as": {
+    "text": "Risk Node-9 glitching out and shutting down",
+    "choices": {}
   },
-  "scene1-1-2": {
-    "text": "The scan reveals multiple life signs but unclear data. A transmission comes through: distorted voices repeating 'Help us.' You sense desperation but also something sinister beneath.",
-    "choices": {
-      "Follow the voices": "scene1-1-2-1",
-      "Return immediately to Orion": "scene1-1-2-2"
-    }
+  "You refuse": {
+    "text": "She is able to give you safe passage out of earth and into the asteroid belt. [[You encounter an asteroid]]",
+    "choices": {}
   },
-  "scene1-1-2-1": {
-    "text": "Following the voices, you reach a chamber filled with suspended human-like figures encased in translucent pods. Their eyes open simultaneously, fixating on you.",
-    "choices": {
-      "Attempt to free them": "ending5",
-      "Back away slowly": "ending6"
-    }
+  "Sure": {
+    "text": "He is knowledgeable and her closest friend and could really help with the mission and getting what you need to survive the esacpe mission\nHe convinces Vex to turn you in and the game ends.",
+    "choices": {}
   },
-  "scene1-1-2-2": {
-    "text": "Returning to Orion, the docking clamps malfunction, trapping you aboard the derelict ship. NOVA urgently alerts: 'Systems compromised. Extraterrestrial intrusion detected.'",
-    "choices": {
-      "Fight your way back to the cockpit": "ending7",
-      "Attempt manual override": "ending8"
-    }
+  "You encounter an asteroid": {
+    "text": "You're cruising fast through the outer rim of the asteroid belt with Vex in the pilot seat, her boots kicked up, chewing some synthetic gum like she\u2019s on a joyride.\n\nVex smirks:\n\"You really trust me flying this close to the rocks? Brave, or stupid?\"\n\nSuddenly, a massive warning klaxon blares across the console.\n\nNODE-9 (through comms):\n\"Impact imminent. One object detected. Velocity\u2014high. Recommendation: evasive maneuver.\"\n\nAhead, a mid-sized asteroid spins toward you. You\u2019ve got two seconds.\n\n[[Dodge It]][[Absorb it with your rear haul]]",
+    "choices": {}
   },
-  "scene1-2": {
-    "text": "Inspecting Orion's internal systems reveals sabotage—critical components tampered with during hypersleep. NOVA reports an unknown entity aboard your ship, moving toward engineering.",
-    "choices": {
-      "Intercept the intruder": "scene1-2-1",
-      "Seal off engineering remotely": "scene1-2-2"
-    }
+  "You encounter a guard ship right outside of earth": {
+    "text": "[[Engage with the guard ship using protocol that AI knows]][[Go into stealth mode]]",
+    "choices": {}
   },
-  "scene1-2-1": {
-    "text": "You rush to engineering, finding a cloaked figure manipulating the reactor controls. The intruder turns, revealing familiar yet distorted human features beneath alien augmentation.",
-    "choices": {
-      "Attempt to communicate": "scene1-2-1-1",
-      "Subdue immediately": "scene1-2-1-2"
-    }
+  "A guard sees you guys trying to board a ship and is suspicious": {
+    "text": "You're in the shadows of Dock 7, the wind from distant thrusters roaring around you. Zel checks the forged access codes again. One ship waits on the pad: a corporate cargo hauler. You hear footsteps\u2014not security, but someone else.\n\nA figure in a long coat steps from the smoke. His voice cuts through the static:\n\"You don't have to do this the hard way. There's another way off this rock, cleaner. Safer. Trust me.\"\n\nZel stiffens.\n\"That\u2019s a Broker runner. I told you not to deal with them.\"\n\n\n\n[[\u201cWe stick to the plan. We fly quiet, and we fly now.\u201d]][[Wait. What kind of deal are we talking about?]]",
+    "choices": {}
   },
-  "scene1-2-1-1": {
-    "text": "Communication is strained but successful. The intruder reveals they've been infected by an alien intelligence, pleading for release or help.",
-    "choices": {
-      "Try to save the intruder": "ending9",
-      "Eject them into space": "ending10"
-    }
+  "\u201cWe stick to the plan. We fly quiet, and we fly now.\u201d": {
+    "text": "Game continues, Zel safely guides you through the asteroid belt and into the 3 wormholes.\n\n[[Final Approach]]",
+    "choices": {}
   },
-  "scene1-2-1-2": {
-    "text": "The intruder fights fiercely but you overpower them. Before collapsing, they whisper, 'It's already too late... they're coming.' NOVA detects an incoming fleet of unknown ships.",
-    "choices": {
-      "Prepare defenses": "ending11",
-      "Attempt escape": "ending12"
-    }
+  "Wait. What kind of deal are we talking about?": {
+    "text": "Wait. What kind of deal are we talking about?\u201d\n\nOutcome: The Broker runner smiles.\n\u201cA direct gate to freedom. No need for smuggler ships or corporate signatures. Just step inside.\u201d\n\nYou follow him into a hangar with a sleek, unfamiliar ship. The ramp closes behind you.\n\nA sharp hiss.\n\nThe floor beneath you turns transparent\u2026 revealing you\u2019re not in a ship. You\u2019re in a containment pod.\n\nHe speaks over comms:\n\u201cCongratulations. You\u2019ve been delivered. Payment received.\u201d",
+    "choices": {}
   },
-  "scene1-2-2": {
-    "text": "Sealing engineering traps the intruder, but NOVA warns that critical reactor damage has already occurred. A decision must be made immediately to prevent destruction.",
-    "choices": {
-      "Vent engineering into space": "scene1-2-2-1",
-      "Attempt emergency repairs remotely": "scene1-2-2-2"
-    }
+  "Engage with the guard ship using protocol that AI knows": {
+    "text": "NODE-9, spoof our ID. Make us look like a corporate salvage team.\u201d\n\nOutcome: NODE-9 engages its corrupted protocols, repurposing fragments of old access codes and voice logs.\n\nThe comms crackle.\nGuard Ship: \u201c...copy that. Resume course. Next time, respond faster.\u201d\n\nYou navigate through the asteroid belt successfully and reach the 3 wormholes.\n\n[[Final Approach]]",
+    "choices": {}
   },
-  "scene1-2-2-1": {
-    "text": "You vent the section, eliminating the threat but losing vital reactor functions. Power dwindles, leaving Orion drifting helplessly toward the derelict.",
-    "choices": {
-      "Send distress signal": "ending13",
-      "Attempt a manual reboot": "ending14"
-    }
+  "Go into stealth mode": {
+    "text": "\u201cCut the engines. Power down everything. Let them pass.\u201d\n\nOutcome: The ship goes dark. The engines whine to a halt. NODE-9 hums nervously.\n\nFor a moment, there's silence.\n\nThen:\nGuard Ship: \u201cUnregistered vessel detected. No beacon. Locking tractor beam.\u201d\n\nLights flood the cabin. You feel the hull shudder.\n\nNODE-9 says one final thing:\n\u201cHiding was a statistically poor strategy. Goodbye.\u201d\n\nGAME OVER.\n\n\u201cSometimes silence is the loudest answer.\u201d",
+    "choices": {}
   },
-  "scene1-2-2-2": {
-    "text": "Remote repairs stabilize the reactor briefly, but the intruder escapes engineering through ventilation shafts. NOVA detects them approaching your position rapidly.",
-    "choices": {
-      "Prepare an ambush": "ending15",
-      "Lock yourself in the cockpit": "ending16"
-    }
+  "Dodge It": {
+    "text": "\u201cVeer right! Hard and fast!\u201d\n\nOutcome: The ship jolts violently as Vex yanks the controls. You narrowly dodge the asteroid\u2014\nBut NODE-9 screams through static:\n\u201cSecondary mass detected\u2014hidden in asteroid shadow. Collision imminent.\u201d\n\nYou see it\u2014a massive, dark behemoth of a rock, concealed behind the first one. Too close. Too fast.\n\nYour ship is obliterated.\n\nVex\u2019s last words:\n\u201cWell... guess I zigged when I should\u2019ve zagged.\u201d\n\nGAME OVER.\n\n\u201cEven skilled pilots can\u2019t outrun bad luck.\u201d",
+    "choices": {}
   },
-  "ending1": {
-    "text": "Discovered and captured by aliens, your fate remains a mystery.",
-    "choices": {
-      "End Game": "exit"
-    }
+  "Absorb it with your rear haul": {
+    "text": "Choice B: Let It Hit the Rear Hull (Keep Going)\n\u201cHold course. Let it clip the tail.\u201d\n\nOutcome: Vex\u2019s eyes widen, but she nods.\n\nThe asteroid slams into the ship\u2019s rear, jolting the cabin and throwing you both forward. Sparks fly. Hull breach in the storage bay. One stabilizer down.\n\nNODE-9:\n\u201cDamage report: minimal. Flight capability reduced, but stable.\u201d\n\nVex curses, kicks the console back into life.\n\u201cYou\u2019re a maniac. I love it. Let\u2019s keep flying.\u201d\n\nContinue the game.\n\nThe ship is damaged. But you survive.\n\nGame continues, Vex safely guides you through the asteroid belt and into the 3 wormholes.\n\n[[Final Approach]]",
+    "choices": {}
   },
-  "ending2": {
-    "text": "Your escape fails, leaving you stranded forever in the derelict ship.",
-    "choices": {
-      "End Game": "exit"
-    }
+  "Trust": {
+    "text": "Game Over\nSells you out to the government as he is an agent working on the streets to lure out criminals.",
+    "choices": {}
   },
-  "ending3": {
-    "text": "You form an unexpected alliance, beginning a new chapter among the stars.",
-    "choices": {
-      "End Game": "exit"
-    }
+  "Final Approach": {
+    "text": "[[The Blue Swirl]][[The Crimson Spiral]][[The Purple Void]]",
+    "choices": {}
   },
-  "ending4": {
-    "text": "Defiance costs you dearly, as the alien reveals its true, hostile nature.",
-    "choices": {
-      "End Game": "exit"
-    }
+  "The Blue Swirl": {
+    "text": "Description: Calm, steady rotations. Almost hypnotic. Emits a faint hum that resonates in your chest.\nOutcome:\n You emerge on a peaceful Earth-like world\u2014lush, untouched. There's no sign of civilization, but the air is breathable, the water clean.\n\n\nYou survive",
+    "choices": {}
   },
-  "ending5": {
-    "text": "The pods open, releasing beings grateful yet mysteriously silent.",
-    "choices": {
-      "End Game": "exit"
-    }
+  "The Crimson Spiral": {
+    "text": "Description: Twisting violently, edges sparking like it's tearing itself apart. The console glitches when scanned.\nOutcome:\n You arrive in a war-torn industrial planet, ruled by megacorps even more ruthless than Earth. But\u2026 there's a resistance.\n\n\nYou can rise in power, or fall in the chaos.",
+    "choices": {}
   },
-  "ending6": {
-    "text": "You retreat safely, haunted by the image of captive faces.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending7": {
-    "text": "Overwhelmed by intruders, Orion becomes your tomb.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending8": {
-    "text": "Manual override succeeds, but you drift helplessly into oblivion.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending9": {
-    "text": "You save the intruder, sparking new hope for interspecies understanding.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending10": {
-    "text": "The intruder's ejection ensures safety, but leaves you isolated and haunted.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending11": {
-    "text": "A heroic defense ensues, your courage becoming legend.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending12": {
-    "text": "You narrowly escape, charting a lonely course into the unknown.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending13": {
-    "text": "The distress call answered too late; your story becomes a cautionary tale.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending14": {
-    "text": "The reboot restores hope, guiding you safely back home.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending15": {
-    "text": "Your ambush fails, and the intruder claims Orion as its own.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "ending16": {
-    "text": "Locked in, you survive—but at the cost of permanent solitude.",
-    "choices": {
-      "End Game": "exit"
-    }
-  },
-  "exit": {}
+  "The Purple Void": {
+    "text": "Description: Nearly silent. Emits strange patterns of light that don\u2019t follow any rhythm. Time feels\u2026 stretched.\nOutcome:\n You exit into a reality where time, memory, and identity are fluid. You're not sure if you're still you. Echoes of the past replay. You may be in a simulation, or a dream\u2026 or another layer of existence entirely.",
+    "choices": {}
+  }
 }
