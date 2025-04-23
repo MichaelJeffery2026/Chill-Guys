@@ -1,4 +1,6 @@
-import pygame
+# run pip3 install pygame_aseprite_animation to install animation package
+from pygame_aseprite_animation import *
+import os, pygame
 import json
 import time  # time is no longer used for sleeping here
 
@@ -422,6 +424,17 @@ def draw_fps():
     screen.blit(fps_text, (0, 0))
 
 # --- Main Game Loop ---
+# defining animations
+heartAnimation = Animation('Assets/animations/heart.aseprite')
+animationmanager1 = AnimationManager([heartAnimation], screen)
+
+brainAnimation = Animation('Assets/animations/brain.aseprite')
+animationmanager2 = AnimationManager([brainAnimation], screen)
+
+oxygenAnimation = Animation('Assets/animations/oxygen.aseprite')
+animationmanager3 = AnimationManager([oxygenAnimation], screen)
+
+# Main Loop
 running = True
 while running:
     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -429,19 +442,25 @@ while running:
     choices = list(scene.get("choices", {}).keys())
     
     screen.fill(BORDER_COLOR)
+    
     if GAME_STATE == "title":
         render_title_screen()
         debug_title_screen()
     else:
         render_status()
         render_choice()
+        # animation updating
+        animationmanager1.update_self(-50, -90)
+        animationmanager2.update_self(-60, 10)
+        animationmanager3.update_self(-60, -120)
         render_narrative()
         debug_game()
+        
     
     if is_menu_open:
         render_menu()
         debug_menu()
-    
+        
     draw_fps()
     pygame.display.flip()
     
@@ -504,5 +523,6 @@ while running:
                                 # Set up the typewriter effect for the new scene text.
                                 start_typing(story[current_scene]["text"])
     clock.tick(60)
+    
 
 pygame.quit()
