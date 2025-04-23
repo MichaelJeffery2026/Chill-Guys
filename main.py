@@ -409,7 +409,7 @@ playlist = [
     'Assets/music/rane.wav',
     'Assets/music/Exploration.wav'
 ]
-currentSongIndex = 1
+currentSongIndex = 1 #Start at second song, arbitrary (loops through playlist in event handler)
 
 SONG_END = pygame.USEREVENT +1
 pygame.mixer.music.set_endevent(SONG_END)
