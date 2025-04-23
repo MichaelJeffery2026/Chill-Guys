@@ -392,6 +392,9 @@ def draw_fps():
     screen.blit(fps_text, (0, 0))  # Position at top-left
 
 # defining animations
+spaceman = Animation('Assets/animations/spaceman.aseprite')
+animationmanager0 = AnimationManager([spaceman], screen)
+
 heartAnimation = Animation('Assets/animations/heart.aseprite')
 animationmanager1 = AnimationManager([heartAnimation], screen)
 
@@ -400,6 +403,79 @@ animationmanager2 = AnimationManager([brainAnimation], screen)
 
 oxygenAnimation = Animation('Assets/animations/oxygen.aseprite')
 animationmanager3 = AnimationManager([oxygenAnimation], screen)
+
+desertAnimation = Animation('Assets/animations/DesertPlanet.aseprite')
+animationmanager4 = AnimationManager([desertAnimation], screen)
+
+iceAnimation = Animation('Assets/animations/icePlanet.aseprite')
+animationmanager5 = AnimationManager([iceAnimation], screen)
+
+ringedAnimation = Animation('Assets/animations/ringedPlanet.aseprite')
+animationmanager6 = AnimationManager([ringedAnimation], screen)
+
+star1 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager7 = AnimationManager([star1], screen)
+
+star2 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager8 = AnimationManager([star2], screen)
+
+star3 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager9 = AnimationManager([star3], screen)
+
+star4 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager10 = AnimationManager([star4], screen)
+
+star5 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager11 = AnimationManager([star5], screen)
+
+star6 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager12 = AnimationManager([star6], screen)
+
+star7 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager13 = AnimationManager([star7], screen)
+
+star8 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager14 = AnimationManager([star8], screen)
+
+star9 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager15 = AnimationManager([star9], screen)
+
+star10 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager16 = AnimationManager([star10], screen)
+
+star11 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager17 = AnimationManager([star11], screen)
+
+star12 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager18 = AnimationManager([star12], screen)
+
+star13 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager19 = AnimationManager([star13], screen)
+
+star14 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager20 = AnimationManager([star14], screen)
+
+star15 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager21 = AnimationManager([star15], screen)
+
+star16 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager22 = AnimationManager([star16], screen)
+
+star17 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager23 = AnimationManager([star17], screen)
+
+star18 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager24 = AnimationManager([star18], screen)
+
+star19 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager25 = AnimationManager([star19], screen)
+
+star20 = Animation('Assets/animations/starTWINKLE.aseprite')
+animationmanager26 = AnimationManager([star20], screen)
+
+spiralPlanet = Animation('Assets/animations/spiralPlanet.aseprite')
+animationmanager27 = AnimationManager([spiralPlanet], screen)
+
 
 # Main Loop
 running = True
@@ -417,6 +493,31 @@ while running:
     
     if (GAME_STATE == "title"):
         render_title_screen()
+        # animation updating
+        animationmanager4.update_self(-50, -90)
+        animationmanager5.update_self(1350, 150)
+        animationmanager6.update_self(350, 450)
+        animationmanager27.update_self(1500, 650)
+        animationmanager7.update_self(450, 300)
+        animationmanager8.update_self(950, 320)
+        animationmanager9.update_self(150, 350)
+        animationmanager10.update_self(1150, 200)
+        animationmanager11.update_self(200, 600)
+        animationmanager12.update_self(650, 550)
+        animationmanager13.update_self(450, 500)
+        animationmanager14.update_self(820, 420)
+        animationmanager15.update_self(1250, 650)
+        animationmanager16.update_self(315, 400)
+        animationmanager17.update_self(400, 720)
+        animationmanager18.update_self(550, 950)
+        animationmanager19.update_self(1500, 640)
+        animationmanager20.update_self(1800, 250)
+        animationmanager21.update_self(1650, 500)
+        animationmanager22.update_self(2020, 480)
+        animationmanager23.update_self(1950, 620)
+        animationmanager24.update_self(1315, 400)
+        animationmanager25.update_self(2100, 700)
+        animationmanager26.update_self(1650, 450)
         debug_title_screen()
     else:
         render_status()
@@ -425,6 +526,7 @@ while running:
         animationmanager1.update_self(-50, -90)
         animationmanager2.update_self(-60, 10)
         animationmanager3.update_self(-60, -120)
+        animationmanager0.update_self(-60, 500)
         render_narrative()
         debug_game()
         
