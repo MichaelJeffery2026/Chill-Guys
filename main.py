@@ -538,14 +538,13 @@ while running:
                                 are_effects_applied = False
                                 # Set up the typewriter effect for the new scene text.
                                 start_typing(story[current_scene]["text"])
-    clock.tick(60)
+    
         elif event.type == SONG_END:
             currentSongIndex += 1
             if currentSongIndex >= len(playlist):
                 currentSongIndex = 0
             pygame.mixer.music.load(playlist[currentSongIndex])
             pygame.mixer.music.play()
-    
-    
+        clock.tick(60)
 
 pygame.quit()
