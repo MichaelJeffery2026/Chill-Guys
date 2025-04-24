@@ -258,21 +258,24 @@ def render_status():
         STATUSES.append(rect)
         STATUS_LOGOS.append(status_logo)
         STATUS_TEXTS.append(status_text)
-        try:
-            if i < len(STATUS_ICONS):
-                logo = pygame.image.load(STATUS_ICONS[i])
-            else:
-                logo = pygame.image.load("Assets/General/error.png")
-        except:
-            logo = pygame.Surface((status_logo.width, status_logo.height))
-            logo.fill((255, 0, 0))
-        logo = pygame.transform.scale(logo, (status_logo.width, status_logo.height))
-        screen.blit(logo, status_logo)
-        if (i < len(STATUS_NAMES) and i < len(STATUS_VALUES)):
-            text_surface = font.render(STATUS_NAMES[i] + ": " + str(STATUS_VALUES[i]), True, STATUS_TEXT_COLOR)
-        else:
-            text_surface = font.render("Error", True, STATUS_TEXT_COLOR)
-        screen.blit(text_surface, text_surface.get_rect(center=status_text.center))
+        
+        #Code to include potential Statuses
+        #try:
+        #    if i < len(STATUS_ICONS):
+        #        logo = pygame.image.load(STATUS_ICONS[i])
+        #    else:
+        #        logo = pygame.image.load("Assets/General/error.png")
+        #except:
+        #    logo = pygame.Surface((status_logo.width, status_logo.height))
+        #    logo.fill((255, 0, 0))
+        #logo = pygame.transform.scale(logo, (status_logo.width, status_logo.height))
+        #screen.blit(logo, status_logo)
+        
+        #if (i < len(STATUS_NAMES) and i < len(STATUS_VALUES)):
+        #    text_surface = font.render(STATUS_NAMES[i] + ": " + str(STATUS_VALUES[i]), True, STATUS_TEXT_COLOR)
+        #else:
+        #    text_surface = font.render("Error", True, STATUS_TEXT_COLOR)
+        #screen.blit(text_surface, text_surface.get_rect(center=status_text.center))
 
 # --- Helper: Render Narrative ---
 def render_narrative():
